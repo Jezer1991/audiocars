@@ -1,0 +1,87 @@
+import React, { useState, useEffect } from "react";
+import Axios from 'axios';
+import { Table, Button } from 'reactstrap';
+import swal from 'sweetalert';
+
+
+
+const List = () => {
+
+    useEffect(() => {
+        Axios.get('http://localhost:3001/api/getRespuestos').then((response) => {
+            setRespuestosList(response.data);
+        })
+    }, []);
+
+    const borrar = (event, id) => {
+        event.preventDefault();
+
+        swal({
+            title: "Are you sure?",
+            text: "Once deleted, you will not be able to recover this imaginary file!",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+            .then((willDelete) => {
+                if (willDelete) {
+                    Axios.delete(`http://localhost:3001/api/delete/${id}`).then(response => {
+                        if (response.status === 200) {
+                            swal({
+                                text: "Respuesto eliminado",
+                                icon: "success",
+                                buttons: false,
+                                timer: 1500
+                            }).then(function () {
+                                window.location = "/respuestos";
+                            });
+                        }
+                    });
+                } else {
+                    swal("Your imaginary file is safe!");
+                }
+            });
+    }
+
+    const [respuestosList, setRespuestosList] = useState([]);
+
+    return (
+        <Table striped>
+            <thead>
+                <tr>
+                    <th>REF</th>
+                    <th>Códogio</th>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Marca</th>
+                    <th>Stock</th>
+                    <th>Precio</th>
+                    <th>Original</th>
+
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {respuestosList.map((respuesto) => {
+                    var original = respuesto.esOriginal ? 'Si' : 'NO';
+                    return (
+                        <tr key={respuesto.id}>
+                            <th >{respuesto.referencia}</th>
+                            <th >{respuesto.codigo}</th>
+                            <th >{respuesto.nombre}</th>
+                            <th >{respuesto.descripcion}</th>
+                            <th >{respuesto.marca}</th>
+                            <th >{respuesto.stock}</th>
+                            <th >{respuesto.precio}</th>
+                            <th >{original}</th>
+                            <th ><Button onClick={(e) => borrar(e, respuesto.id)} color="danger"> borrar </Button></th>
+                        </tr>
+                    );
+                })
+                }
+            </tbody>
+        </Table>
+    );
+}
+
+export default List;

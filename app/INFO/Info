@@ -1,0 +1,22 @@
+ALTER TABLE table_name
+  DROP COLUMN column_name;
+
+  ALTER TABLE respuestos
+ADD COLUMN referencia INT(10) AFTER id
+
+
+ALTER TABLE respuestos ADD COLUMN RowId  INT AUTO_INCREMENT NOT NULL PRIMARY KEY FIRST,
+AUTO_INCREMENT = 1000;
+
+ALTER TABLE respuestos ADD COLUMN referencia INT(10)  NOT NULL after id
+
+
+DELIMITER $$
+CREATE TRIGGER trigger_referencia AFTER INSERT ON respuestos
+FOR EACH ROW
+BEGIN
+  UPDATE respuestos SET referencia = referencia + 1000 WHERE id = NEW.id;
+END $$
+DELIMITER ;
+
+drop trigger trigger_referencia
